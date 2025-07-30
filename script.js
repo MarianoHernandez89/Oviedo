@@ -21,7 +21,7 @@ fetch(URL)
     combosData = data;
     data.forEach(combo => {
       const card = document.createElement('div');
-      card.className = 'relative rounded-lg overflow-hidden shadow-lg h-64 flex items-end justify-center';
+      card.className = 'rounded-lg overflow-hidden shadow-lg bg-white flex flex-col';
 
       const imagenUrl = combo.Imagen || combo.imagen || '';
       const nombre = (combo.Nombre || combo.nombre || 'Sin nombre').toUpperCase();
@@ -35,23 +35,22 @@ fetch(URL)
 
       card.innerHTML = `
         <!-- Imagen con título y productos -->
-        <div class="relative h-60 bg-cover bg-center rounded-t-lg" style="background-image: url('${imagenUrl}')">
-          
+        <div class="relative h-60 bg-cover bg-center" style="background-image: url('${imagenUrl}')">
           <!-- Nombre del combo arriba -->
-          <div class="absolute top-0 w-full bg-black text-white text-center py-2 z-10">
-            <h2 class="text-lg md:text-xl font-bold uppercase truncate px-2">${nombre}</h2>
+          <div class="absolute top-0 left-0 right-0 bg-black/70 text-white text-center py-1 z-10">
+            <h2 class="text-base md:text-lg font-bold uppercase truncate px-2">${nombre}</h2>
           </div>
-          
-          <!-- Productos al centro -->
-          <div class="absolute inset-0 flex items-center justify-center px-4">
-            <div class="text-xs md:text-sm text-white font-bold uppercase text-center space-y-1 mt-10">
+      
+          <!-- Productos centrados -->
+          <div class="absolute inset-0 flex items-center justify-center px-4 text-center">
+            <div class="text-xs md:text-sm text-white font-semibold uppercase space-y-1 mt-8">
               ${productos.split(',').map(prod => `<p>${prod.trim()}</p>`).join('')}
             </div>
           </div>
         </div>
       
         <!-- Parte inferior: precio y botón -->
-        <div class="bg-white p-4 rounded-b-lg flex flex-col items-center space-y-2">
+        <div class="p-4 flex flex-col items-center space-y-2">
           <p class="text-lg font-bold text-red-700">$${precio.toLocaleString('es-AR')}</p>
           <button class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded add-to-cart">
             Agregar al carrito
