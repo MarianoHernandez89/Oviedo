@@ -39,13 +39,13 @@ fetch(URL)
         <div class="relative h-60 bg-cover bg-center rounded-t-lg" style="background-image: url('${imagenUrl}')">
           
           <!-- Nombre del combo -->
-          <div class="absolute top-0 w-full bg-black/70 text-white text-center py-2 z-10">
-            <h2 class="text-lg md:text-xl font-bold uppercase truncate px-2">${nombre}</h2>
+          <div class="absolute top-0 w-full bg-black/70 text-white text-center py-2 z-20">
+            <h2 class="text-lg md:text-xl font-bold uppercase px-2 truncate">${nombre}</h2>
           </div>
           
-          <!-- Productos al centro con fondo oscuro -->
+          <!-- Productos al centro con fondo oscuro y separación del título -->
           <div class="absolute inset-0 flex items-center justify-center px-4">
-            <div class="bg-black/60 rounded p-2 w-full text-center space-y-1">
+            <div class="bg-black/60 rounded p-2 w-full text-center space-y-1 max-h-[70%] overflow-y-auto mt-8 pt-4">
               ${productos
                 .split(',')
                 .map(prod => `<p class="text-white text-sm md:text-base font-bold uppercase tracking-wide">${prod.trim()}</p>`)
@@ -53,6 +53,15 @@ fetch(URL)
             </div>
           </div>
         </div>
+      
+        <!-- Parte inferior: precio y botón fuera de la imagen -->
+        <div class="bg-white px-4 py-2 flex flex-row justify-between items-center">
+          <p class="text-base font-bold text-red-700">$${precio.toLocaleString('es-AR')}</p>
+          <button class="bg-red-700 hover:bg-red-800 text-white text-sm px-3 py-1 rounded add-to-cart">
+            Agregar al carrito
+          </button>
+        </div>
+      `;
 
         <!-- Parte inferior: precio y botón fuera de la imagen -->
         <div class="bg-white px-4 py-2 flex flex-row justify-between items-center">
