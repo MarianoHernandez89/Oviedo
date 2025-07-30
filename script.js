@@ -1,3 +1,5 @@
+// Tu JavaScript actualizado con mejoras visuales
+
 const SHEET_ID = '1YUK837KaCVRFGvSoBG5y0AANIAaFtD6ea00ikSrqR-o';
 const SHEET_NAME = 'Combos';
 const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
@@ -26,7 +28,6 @@ fetch(URL)
       const imagenUrl = combo.Imagen || combo.imagen || '';
       const nombre = (combo.Nombre || combo.nombre || 'Sin nombre').toUpperCase();
       const productos = combo.Productos || combo.productos || '';
-      const productosHTML = productos.split(',').map(prod => `<li>${prod.trim()}</li>`).join('');
       const precio = parseFloat(combo.Precio || combo.precio || 0);
 
       card.style.backgroundImage = `url('${imagenUrl}')`;
@@ -37,28 +38,30 @@ fetch(URL)
         <!-- Imagen con título y productos -->
         <div class="relative h-60 bg-cover bg-center rounded-t-lg" style="background-image: url('${imagenUrl}')">
           
-          <!-- Nombre del combo arriba -->
-          <div class="absolute top-0 w-full bg-black text-white text-center py-2 z-10">
+          <!-- Nombre del combo -->
+          <div class="absolute top-0 w-full bg-black/70 text-white text-center py-2 z-10">
             <h2 class="text-lg md:text-xl font-bold uppercase truncate px-2">${nombre}</h2>
           </div>
           
-          <!-- Productos al centro -->
+          <!-- Productos al centro con fondo oscuro -->
           <div class="absolute inset-0 flex items-center justify-center px-4">
-            <div class="text-xs md:text-sm text-white font-bold uppercase text-center space-y-1 mt-10">
-              ${productos.split(',').map(prod => `<p>${prod.trim()}</p>`).join('')}
+            <div class="bg-black/60 rounded p-2 w-full text-center space-y-1">
+              ${productos
+                .split(',')
+                .map(prod => `<p class="text-white text-sm md:text-base font-bold uppercase tracking-wide">${prod.trim()}</p>`)
+                .join('')}
             </div>
           </div>
         </div>
-      
-        <!-- Parte inferior: precio y botón -->
-        <div class="bg-white px-4 py-2 rounded-b-lg flex flex-row justify-between items-center">
+
+        <!-- Parte inferior: precio y botón fuera de la imagen -->
+        <div class="bg-white px-4 py-2 flex flex-row justify-between items-center">
           <p class="text-base font-bold text-red-700">$${precio.toLocaleString('es-AR')}</p>
           <button class="bg-red-700 hover:bg-red-800 text-white text-sm px-3 py-1 rounded add-to-cart">
             Agregar al carrito
           </button>
         </div>
       `;
-
 
       card.querySelector('.add-to-cart').addEventListener('click', () => {
         carrito.push({ nombre, precio, productos });
