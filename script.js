@@ -4,13 +4,14 @@ const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 const combosContainer = document.getElementById('combos-container');
 const totalSpan = document.getElementById('total');
-const modal = document.getElementById('carrito-modal');
-const modalContent = document.getElementById('carrito-items');
+const modal = document.getElementById('modal-carrito'); // <--- corregido
+const modalContent = document.getElementById('lista-carrito'); // <--- corregido
 const nombreInput = document.getElementById('nombre');
 const entregaInput = document.getElementById('entrega');
-const metodoPagoInputs = document.getElementsByName('metodo-pago');
-const enviarPedidoBtn = document.getElementById('enviar-pedido');
-const cerrarModalBtn = document.getElementById('cerrar-modal');
+const metodoPagoInputs = document.getElementsByName('pago'); // <--- corregido
+const enviarPedidoBtn = document.getElementById('enviar-whatsapp'); // <--- corregido
+const cerrarModalBtn = document.getElementById('cancelar'); // <--- corregido
+
 
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 let combosData = [];
