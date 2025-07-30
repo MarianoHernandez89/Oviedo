@@ -35,24 +35,25 @@ fetch(URL)
 
       card.innerHTML = `
         <!-- Imagen con título y productos -->
-        <div class="relative h-60 bg-cover bg-center" style="background-image: url('${imagenUrl}')">
+        <div class="relative h-60 bg-cover bg-center rounded-t-lg" style="background-image: url('${imagenUrl}')">
+          
           <!-- Nombre del combo arriba -->
-          <div class="absolute top-0 left-0 right-0 bg-black/70 text-white text-center py-1 z-10">
-            <h2 class="text-base md:text-lg font-bold uppercase truncate px-2">${nombre}</h2>
+          <div class="absolute top-0 w-full bg-black text-white text-center py-2 z-10">
+            <h2 class="text-lg md:text-xl font-bold uppercase truncate px-2">${nombre}</h2>
           </div>
-      
-          <!-- Productos centrados -->
-          <div class="absolute inset-0 flex items-center justify-center px-4 text-center">
-            <div class="text-xs md:text-sm text-white font-semibold uppercase space-y-1 mt-8">
+          
+          <!-- Productos al centro -->
+          <div class="absolute inset-0 flex items-center justify-center px-4">
+            <div class="text-xs md:text-sm text-white font-bold uppercase text-center space-y-1 mt-10">
               ${productos.split(',').map(prod => `<p>${prod.trim()}</p>`).join('')}
             </div>
           </div>
         </div>
       
         <!-- Parte inferior: precio y botón -->
-        <div class="p-4 flex flex-col items-center space-y-2">
-          <p class="text-lg font-bold text-red-700">$${precio.toLocaleString('es-AR')}</p>
-          <button class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded add-to-cart">
+        <div class="bg-white px-4 py-2 rounded-b-lg flex flex-row justify-between items-center">
+          <p class="text-base font-bold text-red-700">$${precio.toLocaleString('es-AR')}</p>
+          <button class="bg-red-700 hover:bg-red-800 text-white text-sm px-3 py-1 rounded add-to-cart">
             Agregar al carrito
           </button>
         </div>
