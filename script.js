@@ -1,5 +1,5 @@
-const SHEET_ID = 'PEGÁ_ACÁ_TU_ID';
-const SHEET_NAME = 'Hoja1'; // o el nombre de tu pestaña
+const SHEET_ID = '1YUK837KaCVRFGvSoBG5y0AANIAaFtD6ea00ikSrqR-o';
+const SHEET_NAME = 'Combos'; // o el nombre de tu pestaña
 const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 const combosContainer = document.getElementById('combos-container');
