@@ -4,14 +4,13 @@ const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 const combosContainer = document.getElementById('combos-container');
 const totalSpan = document.getElementById('total');
-const modal = document.getElementById('modal-carrito'); // <--- corregido
-const modalContent = document.getElementById('lista-carrito'); // <--- corregido
+const modal = document.getElementById('carrito-modal');
+const modalContent = document.getElementById('carrito-items');
 const nombreInput = document.getElementById('nombre');
 const entregaInput = document.getElementById('entrega');
-const metodoPagoInputs = document.getElementsByName('pago'); // <--- corregido
-const enviarPedidoBtn = document.getElementById('enviar-whatsapp'); // <--- corregido
-const cerrarModalBtn = document.getElementById('cancelar'); // <--- corregido
-
+const metodoPagoInputs = document.getElementsByName('metodo-pago');
+const enviarPedidoBtn = document.getElementById('enviar-pedido');
+const cerrarModalBtn = document.getElementById('cerrar-modal');
 
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 let combosData = [];
@@ -60,31 +59,71 @@ function actualizarTotal() {
   totalSpan.textContent = total.toLocaleString('es-AR');
 }
 
+function agruparCarrito(carrito) {
+  const agrupado = [];
+
+  carrito.forEach(item => {
+    const existente = agrupado.find(el =>
+      el.nombre === item.nombre &&
+      el.productos === item.productos
+    );
+
+    if (existente) {
+      existente.cantidad += 1;
+    } else {
+      agrupado.push({ ...item, cantidad: 1 });
+    }
+  });
+
+  return agrupado;
+}
+
 function renderizarCarrito() {
   modalContent.innerHTML = '';
-  carrito.forEach((item, index) => {
+
+  const carritoAgrupado = agruparCarrito(carrito);
+
+  carritoAgrupado.forEach(item => {
     const div = document.createElement('div');
     div.className = 'mb-4 border-b pb-2';
+
     const productosHTML = item.productos.split(',').map(prod => `<li>${prod.trim()}</li>`).join('');
+
     div.innerHTML = `
-      <div class="flex justify-between items-center">
+      <div class="flex justify-between items-start">
         <div>
           <p class="font-bold">${item.nombre}</p>
+          <p class="text-sm text-gray-700">Cantidad: ${item.cantidad}</p>
           <ul class="text-sm list-disc list-inside">${productosHTML}</ul>
-          <p class="text-red-600">$${item.precio.toLocaleString('es-AR')}</p>
+          <p class="text-red-600 font-medium">$${(item.precio * item.cantidad).toLocaleString('es-AR')}</p>
+          <div class="mt-2 space-x-2">
+            <button class="bg-gray-200 px-2 rounded" onclick="cambiarCantidad('${item.nombre}', '${item.productos}', -1)">−</button>
+            <button class="bg-gray-200 px-2 rounded" onclick="cambiarCantidad('${item.nombre}', '${item.productos}', 1)">+</button>
+          </div>
         </div>
-        <button class="text-red-500 ml-4" onclick="eliminarDelCarrito(${index})">Eliminar</button>
       </div>
     `;
+
     modalContent.appendChild(div);
   });
 }
 
-function eliminarDelCarrito(index) {
-  carrito.splice(index, 1);
-  localStorage.setItem('carrito', JSON.stringify(carrito));
-  actualizarTotal();
-  renderizarCarrito();
+function cambiarCantidad(nombre, productos, cambio) {
+  const index = carrito.findIndex(item =>
+    item.nombre === nombre && item.productos === productos
+  );
+
+  if (index !== -1) {
+    if (cambio === -1) {
+      carrito.splice(index, 1);
+    } else if (cambio === 1) {
+      carrito.push({ nombre, productos, precio: carrito[index].precio });
+    }
+
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+    actualizarTotal();
+    renderizarCarrito();
+  }
 }
 
 document.getElementById('ver-carrito').addEventListener('click', () => {
@@ -120,8 +159,10 @@ enviarPedidoBtn.addEventListener('click', () => {
   mensaje += `*Entrega:* ${entrega}\n`;
   mensaje += `*Método de pago:* ${metodoPago}\n\n`;
 
-  carrito.forEach(item => {
-    mensaje += `*${item.nombre}* - $${item.precio.toLocaleString('es-AR')}\n`;
+  const agrupado = agruparCarrito(carrito);
+
+  agrupado.forEach(item => {
+    mensaje += `*${item.nombre}* x${item.cantidad} - $${(item.precio * item.cantidad).toLocaleString('es-AR')}\n`;
     const productos = item.productos.split(',').map(p => p.trim());
     productos.forEach(prod => mensaje += `  - ${prod}\n`);
     mensaje += `\n`;
