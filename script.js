@@ -4,15 +4,21 @@ const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 const combosContainer = document.getElementById('combos-container');
 const totalSpan = document.getElementById('total');
-const modal = document.getElementById('modal-carrito');
-const listaCarrito = document.getElementById('lista-carrito');
-const enviarBtn = document.getElementById('enviar-whatsapp');
-const cancelarBtn = document.getElementById('cancelar');
+const carritoModal = document.getElementById('carrito-modal');
+const carritoContenido = document.getElementById('carrito-contenido');
+const cerrarCarrito = document.getElementById('cerrar-carrito');
+const enviarPedidoBtn = document.getElementById('enviar-pedido');
+const nombreInput = document.getElementById('nombre');
+const entregaInput = document.getElementById('entrega');
+const pagoInputs = document.getElementsByName('pago');
 
-let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+let carrito = [];
 
-// Eliminar carrito si se refresca
-window.addEventListener('beforeunload', () => localStorage.removeItem('carrito'));
+function limpiarCarrito() {
+  carrito = [];
+  actualizarTotal();
+  localStorage.removeItem('carrito');
+}
 
 fetch(URL)
   .then(res => res.json())
@@ -37,76 +43,87 @@ fetch(URL)
       `;
 
       card.querySelector('.add-to-cart').addEventListener('click', () => {
-        carrito.push({ nombre, precio });
-        localStorage.setItem('carrito', JSON.stringify(carrito));
+        carrito.push({ nombre, productos, precio });
         actualizarTotal();
       });
 
       combosContainer.appendChild(card);
     });
-    actualizarTotal();
+  })
+  .catch(error => {
+    console.error('Error al cargar los datos:', error);
   });
 
 function actualizarTotal() {
   const total = carrito.reduce((sum, item) => sum + item.precio, 0);
   totalSpan.textContent = total.toLocaleString('es-AR');
+  renderizarCarrito();
+}
+
+function renderizarCarrito() {
+  carritoContenido.innerHTML = '';
+
+  if (carrito.length === 0) {
+    carritoContenido.innerHTML = '<p class="text-center">El carrito está vacío.</p>';
+    return;
+  }
+
+  carrito.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'border-b py-2 flex justify-between items-start';
+    div.innerHTML = `
+      <div>
+        <p class="font-bold">${item.nombre}</p>
+        <p class="text-sm text-gray-600">${item.productos}</p>
+        <p class="text-red-700 font-semibold">$${item.precio.toLocaleString('es-AR')}</p>
+      </div>
+      <button class="text-red-500 text-sm" onclick="eliminarDelCarrito(${index})">🗑️</button>
+    `;
+    carritoContenido.appendChild(div);
+  });
+}
+
+function eliminarDelCarrito(index) {
+  carrito.splice(index, 1);
+  actualizarTotal();
 }
 
 document.getElementById('ver-carrito').addEventListener('click', () => {
-  if (carrito.length === 0) {
-    alert('El carrito está vacío.');
-    return;
-  }
-  mostrarCarrito();
+  carritoModal.classList.remove('hidden');
 });
 
-function mostrarCarrito() {
-  listaCarrito.innerHTML = '';
-  carrito.forEach((item, index) => {
-    const li = document.createElement('li');
-    li.className = 'flex justify-between items-center border-b pb-1';
-    li.innerHTML = `
-      <span>${item.nombre} - $${item.precio.toLocaleString('es-AR')}</span>
-      <button class="text-red-600" onclick="eliminarItem(${index})">✕</button>
-    `;
-    listaCarrito.appendChild(li);
-  });
-  modal.classList.remove('hidden');
-}
-
-function eliminarItem(index) {
-  carrito.splice(index, 1);
-  localStorage.setItem('carrito', JSON.stringify(carrito));
-  actualizarTotal();
-  mostrarCarrito();
-}
-
-cancelarBtn.addEventListener('click', () => {
-  modal.classList.add('hidden');
+cerrarCarrito.addEventListener('click', () => {
+  carritoModal.classList.add('hidden');
 });
 
-enviarBtn.addEventListener('click', () => {
-  const nombre = document.getElementById('nombre').value.trim();
-  const entrega = document.getElementById('entrega').value.trim();
-  const metodoPago = document.querySelector('input[name="pago"]:checked')?.value;
+enviarPedidoBtn.addEventListener('click', () => {
+  const nombre = nombreInput.value.trim();
+  const entrega = entregaInput.value.trim();
+  const metodoPago = [...pagoInputs].find(r => r.checked)?.value;
 
   if (!nombre || !entrega || !metodoPago) {
-    alert('Por favor completa todos los campos.');
+    alert('Por favor, complete todos los campos.');
     return;
   }
 
-  const mensaje = `*Nuevo Pedido*%0A
-*Nombre:* ${nombre}%0A
-*Entrega:* ${entrega}%0A
-*Pago:* ${metodoPago}%0A
-*Detalle:*%0A${carrito.map(item => `- ${item.nombre}: $${item.precio.toLocaleString('es-AR')}`).join('%0A')}%0A
-*Total:* $${carrito.reduce((s, i) => s + i.precio, 0).toLocaleString('es-AR')}`;
+  if (carrito.length === 0) {
+    alert('El carrito está vacío. Agregue al menos un combo.');
+    return;
+  }
 
-  const numero = '5492213502642'; // Cambiar por el número real
-  window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
+  const detalle = carrito.map(item => `- ${item.nombre}\n  (${item.productos})\n  $${item.precio.toLocaleString('es-AR')}`).join('\n\n');
+  const total = carrito.reduce((sum, item) => sum + item.precio, 0);
 
-  carrito = [];
-  localStorage.removeItem('carrito');
-  actualizarTotal();
-  modal.classList.add('hidden');
+  const mensaje = `Hola! Quiero hacer un pedido:\n\n${detalle}\n\nTotal: $${total.toLocaleString('es-AR')}\n\nNombre: ${nombre}\nEntrega: ${entrega}\nForma de pago: ${metodoPago}`;
+
+  const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, '_blank');
+
+  limpiarCarrito();
+  carritoModal.classList.add('hidden');
+});
+
+// Limpiar carrito al recargar la página
+window.addEventListener('beforeunload', () => {
+  limpiarCarrito();
 });
