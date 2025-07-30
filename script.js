@@ -34,19 +34,20 @@ fetch(URL)
       card.style.backgroundPosition = 'center';
 
       card.innerHTML = `
-        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-between p-4 text-white">
-          <div>
-            <h2 class="text-lg font-bold uppercase">${nombre}</h2>
-          </div>
-          <div class="overflow-auto max-h-32">
-            <ul class="text-sm list-disc list-inside">${productosHTML}</ul>
-          </div>
-          <div>
-            <p class="text-lg font-semibold mt-2">$${precio.toLocaleString('es-AR')}</p>
-            <button class="mt-2 bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white add-to-cart">Agregar al carrito</button>
+        <div class="relative h-60 bg-cover bg-center flex items-end justify-center text-center" style="background-image: url('${imagenUrl}')">
+          <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center p-4">
+            <h2 class="text-xl font-bold text-white uppercase mb-2">${nombre}</h2>
+            <div class="text-sm text-white font-bold uppercase leading-snug space-y-1">
+              ${productos.split(',').map(prod => `<p>${prod.trim()}</p>`).join('')}
+            </div>
           </div>
         </div>
+        <div class="p-4 text-center">
+          <p class="text-lg font-semibold text-red-700">$${precio.toLocaleString('es-AR')}</p>
+          <button class="mt-2 bg-red-700 text-white px-3 py-1 rounded add-to-cart">Agregar al carrito</button>
+        </div>
       `;
+
 
       card.querySelector('.add-to-cart').addEventListener('click', () => {
         carrito.push({ nombre, precio, productos });
