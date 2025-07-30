@@ -4,19 +4,21 @@ const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 const combosContainer = document.getElementById('combos-container');
 const totalSpan = document.getElementById('total');
-const carritoModal = document.getElementById('carrito-modal');
-const cerrarCarritoBtn = document.getElementById('cerrar-carrito');
-const carritoItemsContainer = document.getElementById('carrito-items');
+const modal = document.getElementById('carrito-modal');
+const modalContent = document.getElementById('carrito-items');
+const nombreInput = document.getElementById('nombre');
+const entregaInput = document.getElementById('entrega');
+const metodoPagoInputs = document.getElementsByName('metodo-pago');
 const enviarPedidoBtn = document.getElementById('enviar-pedido');
+const cerrarModalBtn = document.getElementById('cerrar-modal');
 
-let carrito = [];
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 let combosData = [];
 
 fetch(URL)
   .then(res => res.json())
   .then(data => {
     combosData = data;
-
     data.forEach(combo => {
       const card = document.createElement('div');
       card.className = 'rounded overflow-hidden shadow-lg bg-white relative';
@@ -24,13 +26,14 @@ fetch(URL)
       const imagenUrl = combo.Imagen || combo.imagen || '';
       const nombre = combo.Nombre || combo.nombre || 'Sin nombre';
       const productos = combo.Productos || combo.productos || '';
+      const productosHTML = productos.split(',').map(prod => `<li>${prod.trim()}</li>`).join('');
       const precio = parseFloat(combo.Precio || combo.precio || 0);
 
       card.innerHTML = `
         <div class="h-40 bg-cover bg-center" style="background-image: url('${imagenUrl}')"></div>
         <div class="p-4">
           <h2 class="text-xl font-bold mb-2">${nombre}</h2>
-          <p class="text-sm mb-2">${productos}</p>
+          <ul class="text-sm mb-2 list-disc list-inside">${productosHTML}</ul>
           <p class="text-lg font-semibold text-red-700">$${precio.toLocaleString('es-AR')}</p>
           <button class="mt-2 bg-red-700 text-white px-3 py-1 rounded add-to-cart">Agregar al carrito</button>
         </div>
@@ -38,6 +41,7 @@ fetch(URL)
 
       card.querySelector('.add-to-cart').addEventListener('click', () => {
         carrito.push({ nombre, precio, productos });
+        localStorage.setItem('carrito', JSON.stringify(carrito));
         actualizarTotal();
       });
 
@@ -51,7 +55,35 @@ fetch(URL)
   });
 
 function actualizarTotal() {
-  totalSpan.textContent = carrito.reduce((sum, item) => sum + item.precio, 0).toLocaleString('es-AR');
+  const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+  totalSpan.textContent = total.toLocaleString('es-AR');
+}
+
+function renderizarCarrito() {
+  modalContent.innerHTML = '';
+  carrito.forEach((item, index) => {
+    const div = document.createElement('div');
+    div.className = 'mb-4 border-b pb-2';
+    const productosHTML = item.productos.split(',').map(prod => `<li>${prod.trim()}</li>`).join('');
+    div.innerHTML = `
+      <div class="flex justify-between items-center">
+        <div>
+          <p class="font-bold">${item.nombre}</p>
+          <ul class="text-sm list-disc list-inside">${productosHTML}</ul>
+          <p class="text-red-600">$${item.precio.toLocaleString('es-AR')}</p>
+        </div>
+        <button class="text-red-500 ml-4" onclick="eliminarDelCarrito(${index})">Eliminar</button>
+      </div>
+    `;
+    modalContent.appendChild(div);
+  });
+}
+
+function eliminarDelCarrito(index) {
+  carrito.splice(index, 1);
+  localStorage.setItem('carrito', JSON.stringify(carrito));
+  actualizarTotal();
+  renderizarCarrito();
 }
 
 document.getElementById('ver-carrito').addEventListener('click', () => {
@@ -59,52 +91,52 @@ document.getElementById('ver-carrito').addEventListener('click', () => {
     alert('El carrito está vacío.');
     return;
   }
-
   renderizarCarrito();
-  carritoModal.classList.remove('hidden');
+  modal.classList.remove('hidden');
 });
 
-cerrarCarritoBtn.addEventListener('click', () => {
-  carritoModal.classList.add('hidden');
+cerrarModalBtn.addEventListener('click', () => {
+  modal.classList.add('hidden');
 });
 
 enviarPedidoBtn.addEventListener('click', () => {
-  const nombre = document.getElementById('nombre-cliente').value.trim();
-  const direccion = document.getElementById('direccion-entrega').value.trim();
-  const formaPago = document.querySelector('input[name="forma-pago"]:checked');
-
   if (carrito.length === 0) {
     alert('El carrito está vacío.');
     return;
   }
 
-  if (!nombre || !direccion || !formaPago) {
-    alert('Por favor completá todos los campos y seleccioná una forma de pago.');
+  const nombre = nombreInput.value.trim();
+  const entrega = entregaInput.value.trim();
+  const metodoPago = Array.from(metodoPagoInputs).find(r => r.checked)?.value;
+
+  if (!nombre || !entrega || !metodoPago) {
+    alert('Por favor, completá todos los campos.');
     return;
   }
 
-  const mensaje = `*Nuevo Pedido*%0A
-👤 *Nombre:* ${nombre}%0A📍 *Entrega:* ${direccion}%0A💳 *Pago:* ${formaPago.value}%0A%0A🛒 *Productos:*%0A${carrito.map(item => `- ${item.nombre}: $${item.precio.toLocaleString('es-AR')} (%0A  Contiene: ${item.productos})`).join('%0A')}%0A%0A💰 *Total:* $${carrito.reduce((sum, item) => sum + item.precio, 0).toLocaleString('es-AR')}`;
+  let mensaje = `*Pedido de Combos de Carnicería*\n\n`;
+  mensaje += `*Cliente:* ${nombre}\n`;
+  mensaje += `*Entrega:* ${entrega}\n`;
+  mensaje += `*Método de pago:* ${metodoPago}\n\n`;
 
-  const url = `https://wa.me/?text=${mensaje}`;
-  window.open(url, '_blank');
-});
-
-function renderizarCarrito() {
-  carritoItemsContainer.innerHTML = '';
-  carrito.forEach((item, index) => {
-    const li = document.createElement('li');
-    li.className = 'mb-2 flex justify-between items-center';
-    li.innerHTML = `
-      <span>${item.nombre} - $${item.precio.toLocaleString('es-AR')}</span>
-      <button class="text-red-700" onclick="eliminarItem(${index})">Eliminar</button>
-    `;
-    carritoItemsContainer.appendChild(li);
+  carrito.forEach(item => {
+    mensaje += `*${item.nombre}* - $${item.precio.toLocaleString('es-AR')}\n`;
+    const productos = item.productos.split(',').map(p => p.trim());
+    productos.forEach(prod => mensaje += `  - ${prod}\n`);
+    mensaje += `\n`;
   });
-  actualizarTotal();
-}
 
-function eliminarItem(index) {
-  carrito.splice(index, 1);
-  renderizarCarrito();
-}
+  const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+  mensaje += `*Total:* $${total.toLocaleString('es-AR')}`;
+
+  const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+  window.open(url, '_blank');
+
+  carrito = [];
+  localStorage.removeItem('carrito');
+  actualizarTotal();
+  modal.classList.add('hidden');
+  nombreInput.value = '';
+  entregaInput.value = '';
+  metodoPagoInputs.forEach(r => r.checked = false);
+});
