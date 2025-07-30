@@ -171,8 +171,8 @@ enviarPedidoBtn.addEventListener('click', () => {
 
   const total = carrito.reduce((sum, item) => sum + item.precio, 0);
   mensaje += `*Total:* $${total.toLocaleString('es-AR')}`;
-
-  const url = `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
+  const numeroWhatsApp = '5492213502642';
+  const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
   window.open(url, '_blank');
 
   carrito = [];
