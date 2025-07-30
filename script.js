@@ -34,17 +34,17 @@ fetch(URL)
       card.style.backgroundPosition = 'center';
 
       card.innerHTML = `
-        <div class="relative h-60 bg-cover bg-center flex items-end justify-center text-center" style="background-image: url('${imagenUrl}')">
-          <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-center items-center p-4">
-            <h2 class="text-xl font-bold text-white uppercase mb-2">${nombre}</h2>
-            <div class="text-sm text-white font-bold uppercase leading-snug space-y-1">
+        <div class="relative h-60 bg-cover bg-center" style="background-image: url('${imagenUrl}')">
+          <div class="absolute inset-0 bg-black bg-opacity-60 flex flex-col justify-start items-center text-center p-4 space-y-3">
+            <h2 class="text-2xl font-bold text-white uppercase">${nombre}</h2>
+            <div class="text-sm text-white font-bold uppercase space-y-1">
               ${productos.split(',').map(prod => `<p>${prod.trim()}</p>`).join('')}
             </div>
           </div>
         </div>
-        <div class="p-4 text-center">
-          <p class="text-lg font-semibold text-red-700">$${precio.toLocaleString('es-AR')}</p>
-          <button class="mt-2 bg-red-700 text-white px-3 py-1 rounded add-to-cart">Agregar al carrito</button>
+        <div class="bg-white p-4 text-center">
+          <p class="text-lg font-semibold text-red-700 mb-2">$${precio.toLocaleString('es-AR')}</p>
+          <button class="mt-1 bg-red-700 text-white px-4 py-2 rounded add-to-cart">Agregar al carrito</button>
         </div>
       `;
 
