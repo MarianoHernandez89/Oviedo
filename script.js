@@ -102,7 +102,7 @@ enviarBtn.addEventListener('click', () => {
 *Detalle:*%0A${carrito.map(item => `- ${item.nombre}: $${item.precio.toLocaleString('es-AR')}`).join('%0A')}%0A
 *Total:* $${carrito.reduce((s, i) => s + i.precio, 0).toLocaleString('es-AR')}`;
 
-  const numero = '5491123456789'; // Cambiar por el número real
+  const numero = '5492213502642'; // Cambiar por el número real
   window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
 
   carrito = [];
