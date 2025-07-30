@@ -4,14 +4,13 @@ const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
 const combosContainer = document.getElementById('combos-container');
 const totalSpan = document.getElementById('total');
-const modal = document.getElementById('modal-carrito'); // <--- corregido
-const modalContent = document.getElementById('lista-carrito'); // <--- corregido
+const modal = document.getElementById('modal-carrito');
+const modalContent = document.getElementById('lista-carrito');
 const nombreInput = document.getElementById('nombre');
 const entregaInput = document.getElementById('entrega');
-const metodoPagoInputs = document.getElementsByName('pago'); // <--- corregido
-const enviarPedidoBtn = document.getElementById('enviar-whatsapp'); // <--- corregido
-const cerrarModalBtn = document.getElementById('cancelar'); // <--- corregido
-
+const metodoPagoInputs = document.getElementsByName('pago');
+const enviarPedidoBtn = document.getElementById('enviar-whatsapp');
+const cerrarModalBtn = document.getElementById('cancelar');
 
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 let combosData = [];
@@ -22,21 +21,30 @@ fetch(URL)
     combosData = data;
     data.forEach(combo => {
       const card = document.createElement('div');
-      card.className = 'rounded overflow-hidden shadow-lg bg-white relative';
+      card.className = 'relative rounded-lg overflow-hidden shadow-lg h-64 flex items-end justify-center';
 
       const imagenUrl = combo.Imagen || combo.imagen || '';
-      const nombre = combo.Nombre || combo.nombre || 'Sin nombre';
+      const nombre = (combo.Nombre || combo.nombre || 'Sin nombre').toUpperCase();
       const productos = combo.Productos || combo.productos || '';
       const productosHTML = productos.split(',').map(prod => `<li>${prod.trim()}</li>`).join('');
       const precio = parseFloat(combo.Precio || combo.precio || 0);
 
+      card.style.backgroundImage = `url('${imagenUrl}')`;
+      card.style.backgroundSize = 'cover';
+      card.style.backgroundPosition = 'center';
+
       card.innerHTML = `
-        <div class="h-40 bg-cover bg-center" style="background-image: url('${imagenUrl}')"></div>
-        <div class="p-4">
-          <h2 class="text-xl font-bold mb-2">${nombre}</h2>
-          <ul class="text-sm mb-2 list-disc list-inside">${productosHTML}</ul>
-          <p class="text-lg font-semibold text-red-700">$${precio.toLocaleString('es-AR')}</p>
-          <button class="mt-2 bg-red-700 text-white px-3 py-1 rounded add-to-cart">Agregar al carrito</button>
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex flex-col justify-between p-4 text-white">
+          <div>
+            <h2 class="text-lg font-bold uppercase">${nombre}</h2>
+          </div>
+          <div class="overflow-auto max-h-32">
+            <ul class="text-sm list-disc list-inside">${productosHTML}</ul>
+          </div>
+          <div>
+            <p class="text-lg font-semibold mt-2">$${precio.toLocaleString('es-AR')}</p>
+            <button class="mt-2 bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white add-to-cart">Agregar al carrito</button>
+          </div>
         </div>
       `;
 
@@ -81,7 +89,6 @@ function agruparCarrito(carrito) {
 
 function renderizarCarrito() {
   modalContent.innerHTML = '';
-
   const carritoAgrupado = agruparCarrito(carrito);
 
   carritoAgrupado.forEach(item => {
@@ -171,7 +178,8 @@ enviarPedidoBtn.addEventListener('click', () => {
 
   const total = carrito.reduce((sum, item) => sum + item.precio, 0);
   mensaje += `*Total:* $${total.toLocaleString('es-AR')}`;
-  const numeroWhatsApp = '5492213502642';
+
+  const numeroWhatsApp = '5491123456789'; // ← Reemplazalo por el número deseado
   const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
   window.open(url, '_blank');
 
