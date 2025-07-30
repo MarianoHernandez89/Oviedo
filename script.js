@@ -34,17 +34,26 @@ fetch(URL)
       card.style.backgroundPosition = 'center';
 
       card.innerHTML = `
-        <div class="relative h-60 bg-cover bg-center" style="background-image: url('${imagenUrl}')">
-          <div class="absolute inset-0 bg-black bg-opacity-60 flex flex-col justify-start items-center text-center p-4 space-y-3">
-            <h2 class="text-2xl font-bold text-white uppercase">${nombre}</h2>
-            <div class="text-sm text-white font-bold uppercase space-y-1">
+        <div class="relative h-60 bg-cover bg-center rounded-t-lg" style="background-image: url('${imagenUrl}')">
+          <!-- Nombre del combo -->
+          <div class="absolute top-0 w-full bg-black bg-opacity-60 text-white text-center py-2">
+            <h2 class="text-lg md:text-xl font-bold uppercase truncate px-2">${nombre}</h2>
+          </div>
+      
+          <!-- Productos -->
+          <div class="absolute inset-0 flex items-center justify-center px-4">
+            <div class="text-sm md:text-base text-white font-bold uppercase text-center space-y-1 mt-10">
               ${productos.split(',').map(prod => `<p>${prod.trim()}</p>`).join('')}
             </div>
           </div>
         </div>
-        <div class="bg-white p-4 text-center">
-          <p class="text-lg font-semibold text-red-700 mb-2">$${precio.toLocaleString('es-AR')}</p>
-          <button class="mt-1 bg-red-700 text-white px-4 py-2 rounded add-to-cart">Agregar al carrito</button>
+      
+        <!-- Precio y botón -->
+        <div class="bg-white p-4 rounded-b-lg flex flex-col items-center space-y-2">
+          <p class="text-lg font-bold text-red-700">$${precio.toLocaleString('es-AR')}</p>
+          <button class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded add-to-cart">
+            Agregar al carrito
+          </button>
         </div>
       `;
 
