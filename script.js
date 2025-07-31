@@ -193,7 +193,7 @@ enviarPedidoBtn.addEventListener('click', () => {
   const total = carrito.reduce((sum, item) => sum + item.precio, 0);
   mensaje += `*Total:* $${total.toLocaleString('es-AR')}`;
 
-  const numeroWhatsApp = '5491123456789'; // ← Reemplazalo por el número deseado
+  const numeroWhatsApp = '5492216316034'; // ← Reemplazalo por el número deseado
   const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
   window.open(url, '_blank');
 
