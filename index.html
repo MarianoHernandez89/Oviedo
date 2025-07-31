@@ -2,50 +2,60 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Carnicería Oviedo</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Carnicerías Oviedo</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white text-gray-800">
+<body class="bg-white text-gray-900">
 
-  <!-- Header con imagen centrada y sin fondo rojo -->
-  <header class="flex justify-center items-center p-4 bg-transparent">
-    <img src="https://i.imgur.com/YbENHcg.png" alt="Carnicería Oviedo" class="w-80 sm:w-96" />
+  <!-- Header con imagen -->
+  <header class="w-full">
+    <img src="https://i.imgur.com/YbENHcg.png" alt="Carnicerías Oviedo" class="w-full max-w-3xl mx-auto h-auto object-contain" />
   </header>
 
-  <!-- Agregado pb-28 para dejar espacio abajo -->
-  <main id="combos-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-4 pb-40">
-    <!-- Los combos se cargarán aquí -->
+  <!-- Carrito flotante -->
+  <div class="fixed bottom-4 right-4 z-50">
+    <button id="ver-carrito" class="relative bg-red-700 text-white px-4 py-2 rounded-full shadow-lg hover:bg-red-800 focus:outline-none">
+      🛒
+      <span id="contador-carrito" class="absolute -top-2 -right-2 bg-white text-red-700 text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full hidden"></span>
+    </button>
+  </div>
+
+  <!-- Contenedor de combos -->
+  <main class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto" id="combos-container">
+    <!-- Las cards de combos se insertan por JS -->
   </main>
 
-  <section class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-300 p-4 flex justify-between items-center z-40">
-    <span class="font-bold">🛒 Total: $<span id="total">0</span></span>
-    <button id="ver-carrito" class="bg-red-700 text-white px-4 py-2 rounded">Ver Carrito</button>
-  </section>
+  <!-- Modal del carrito -->
+  <div id="modal-carrito" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg max-w-md w-full p-4">
+      <h2 class="text-xl font-bold mb-4">Tu pedido</h2>
+      <div id="lista-carrito" class="max-h-64 overflow-y-auto mb-4"></div>
 
-  <!-- Modal del Carrito -->
-  <div id="modal-carrito" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg w-full max-w-md mx-2">
-      <h2 class="text-xl font-bold mb-4">Tu Pedido</h2>
-      <ul id="lista-carrito" class="mb-4 space-y-2"></ul>
+      <div class="space-y-2 mb-4">
+        <input id="nombre" type="text" placeholder="Tu nombre" class="w-full border rounded px-3 py-2" />
+        <input id="entrega" type="text" placeholder="Dirección o lugar de entrega" class="w-full border rounded px-3 py-2" />
 
-      <input id="nombre" class="w-full border px-2 py-1 mb-2" placeholder="Tu nombre" />
-      <textarea id="entrega" class="w-full border px-2 py-1 mb-2" placeholder="Dirección y horario de entrega"></textarea>
-
-      <div class="mb-4">
-        <p class="mb-1 font-medium">Forma de pago:</p>
-        <label class="mr-4"><input type="radio" name="pago" value="Efectivo" checked /> Efectivo</label>
-        <label><input type="radio" name="pago" value="MercadoPago" /> MercadoPago</label>
+        <div class="flex items-center space-x-4">
+          <label class="flex items-center">
+            <input type="radio" name="pago" value="Efectivo" class="mr-1" /> Efectivo
+          </label>
+          <label class="flex items-center">
+            <input type="radio" name="pago" value="MercadoPago" class="mr-1" /> MercadoPago
+          </label>
+        </div>
       </div>
 
-      <div class="flex justify-between">
-        <button id="cancelar" class="text-red-600">Cancelar</button>
-        <button id="enviar-whatsapp" class="bg-green-600 text-white px-4 py-2 rounded">Enviar Pedido</button>
+      <p class="font-bold text-right mb-4">Total: $<span id="total">0</span></p>
+
+      <div class="flex justify-end space-x-2">
+        <button id="cancelar" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</button>
+        <button id="enviar-whatsapp" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Enviar pedido</button>
       </div>
     </div>
   </div>
 
+  <!-- JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
